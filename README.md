@@ -10,3 +10,4 @@ All implementations are the solution I came up with and are, therefore, probably
 
 # Useful links and resources
   - [Practical cryptography in Python](https://link.springer.com/book/10.1007/978-1-4842-4900-0) by Seth James Nielson and Christopher K. Monson
+  - [Wikipedia MD5 page](https://en.wikipedia.org/wiki/MD5)
