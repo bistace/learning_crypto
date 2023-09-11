@@ -38,58 +38,45 @@ impl Caesar {
             shift_distance_mod,
         }
     }
-}
 
-impl Cipher for Caesar {
-    fn encrypt(&self, plain_text: &str) -> Result<String> {
-        let bytes = plain_text.as_bytes();
+    fn process_text<F>(&self, text: &str, operation: F) -> Result<String>
+    where
+        F: Fn(u8) -> u8,
+    {
+        let bytes = text.as_bytes();
         let mut res_bytes: Vec<u8> = Vec::with_capacity(bytes.len());
 
         for (i, b) in bytes.iter().enumerate() {
             let new_byte = if b.is_ascii_alphabetic() && b.is_ascii_uppercase() {
-                // Calculate the new byte value by shifting the ASCII value of the character
-                (b - b'A' + self.shift_distance_mod) % 26 + b'A'
+                operation(*b)
             } else {
-                // We only handle alphabetic uppercase characters
-                eprintln!(
-                    "Warning - unhandled character: '{:?}'",
-                    plain_text.chars().nth(i)
-                );
+                eprintln!("Warning - unhandled character: '{:?}'", text.chars().nth(i));
                 *b
             };
 
-            res_bytes.push(new_byte);
+            res_bytes.push(new_byte)
         }
 
-        let encoded = std::str::from_utf8(&res_bytes)?;
-        Ok(encoded.to_string())
+        let result = std::str::from_utf8(&res_bytes)?;
+        Ok(result.to_string())
+    }
+}
+
+impl Cipher for Caesar {
+    fn encrypt(&self, plain_text: &str) -> Result<String> {
+        self.process_text(plain_text, |b| {
+            (b - b'A' + self.shift_distance_mod) % 26 + b'A'
+        })
     }
 
     fn decrypt(&self, cipher_text: &str) -> Result<String> {
-        let bytes = cipher_text.as_bytes();
-        let mut res_bytes: Vec<u8> = Vec::with_capacity(bytes.len());
-
         let letter_a_code = b'A' as i16;
-        for (i, b) in bytes.iter().enumerate() {
-            if !b.is_ascii_alphabetic() || !b.is_ascii_uppercase() {
-                eprintln!(
-                    "Warning - unhandled character: '{:?}'",
-                    cipher_text.chars().nth(i)
-                );
-                res_bytes.push(*b);
-                continue;
-            }
-
-            // We need to cast the byte to an i16 because we cannot go below 0 with a
-            // standard u8
-            let b = *b as i16;
+        self.process_text(cipher_text, |b| {
+            let b = b as i16;
             let new_byte =
                 (b - letter_a_code - self.shift_distance_mod as i16).rem_euclid(26) + letter_a_code;
-            res_bytes.push(new_byte as u8);
-        }
-
-        let decoded = std::str::from_utf8(&res_bytes)?;
-        Ok(decoded.to_string())
+            new_byte as u8
+        })
     }
 }
 
