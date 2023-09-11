@@ -6,6 +6,7 @@ All implementations are the solution I came up with and are, therefore, probably
 
 # Currently implemented
   - Caesar cipher encrypt and decrypt
+  - Caesar cipher bruteforce decryption using a list of the most common english words
 
 # Useful links and resources
   - [Practical cryptography in Python](https://link.springer.com/book/10.1007/978-1-4842-4900-0) by Seth James Nielson and Christopher K. Monson
