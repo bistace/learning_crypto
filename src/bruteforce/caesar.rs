@@ -11,32 +11,28 @@ use super::BruteForce;
 /// Returns the most likely decrypted text.
 impl BruteForce for Caesar {
     fn brute_force(&self, cipher_text: &str) -> Result<String> {
-        let word_list = word_list_to_map("datasets/english_1000.txt")?;
+        let word_list = load_word_list("datasets/english_1000.txt")?;
 
-        let mut max_unique_word_count = 0;
-        let mut most_likely_decoded = String::new();
-        for i in 0..25 {
-            let caesar = Caesar::new(i, false);
-            let decoded = caesar.decrypt(cipher_text)?;
-
-            let mut unique_word_count = 0;
-            for word in word_list.iter() {
-                if decoded.contains(word) {
-                    unique_word_count += 1;
-                }
-            }
-
-            if unique_word_count > max_unique_word_count {
-                max_unique_word_count = unique_word_count;
-                most_likely_decoded = decoded;
-            }
-        }
-
-        Ok(most_likely_decoded)
+        (0..25)
+            .filter_map(|i| {
+                let caesar = Caesar::new(i, false);
+                let decoded = match caesar.decrypt(cipher_text) {
+                    Ok(decoded) => decoded,
+                    Err(_) => return None,
+                };
+                let unique_word_count = word_list
+                    .iter()
+                    .filter(|&word| decoded.contains(word))
+                    .count();
+                Some((unique_word_count, decoded))
+            })
+            .max_by_key(|(count, _)| *count)
+            .map(|(_, decoded)| decoded)
+            .ok_or_else(|| anyhow::anyhow!("No valid decryption found"))
     }
 }
 
-fn word_list_to_map(path: &str) -> Result<HashSet<String>> {
+fn load_word_list(path: &str) -> Result<HashSet<String>> {
     Ok(HashSet::from_iter(
         std::fs::read_to_string(path)?
             .lines()
