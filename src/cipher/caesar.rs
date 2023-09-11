@@ -1,7 +1,3 @@
-use super::Cipher;
-
-use anyhow::{Context, Result};
-
 /// The Caesar Cipher is one of the simplest and most widely known encryption
 /// techniques. It is a type of substitution cipher in which each letter in the
 /// plaintext is 'shifted' a certain number of places down the alphabet.
@@ -11,6 +7,9 @@ use anyhow::{Context, Result};
 ///
 /// Our particular version only encodes strings that are uppercase and valid
 /// UTF-8 characters.
+use super::Cipher;
+
+use anyhow::Result;
 
 /// The Caesar struct represents a Caesar cipher with a specific shift distance.
 /// The shift distance is the number of places each letter in the plaintext is
