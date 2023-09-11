@@ -20,6 +20,8 @@ pub struct Caesar {
     pub shift_distance: usize,
     /// The shift distance modulo 26.
     shift_distance_mod: u8,
+    /// Enables or disables the warnings when an unhandled character is found
+    show_warns: bool,
 }
 
 impl Caesar {
@@ -29,12 +31,13 @@ impl Caesar {
     ///   plaintext down the alphabet.
     /// # Returns
     /// A new Caesar cipher with the specified shift distance.
-    pub fn new(shift_distance: usize) -> Self {
+    pub fn new(shift_distance: usize, show_warns: bool) -> Self {
         let shift_distance_mod: u8 = (shift_distance % 26).try_into().unwrap();
 
         Self {
             shift_distance,
             shift_distance_mod,
+            show_warns,
         }
     }
 
@@ -49,7 +52,9 @@ impl Caesar {
             let new_byte = if b.is_ascii_alphabetic() && b.is_ascii_uppercase() {
                 operation(*b)
             } else {
-                eprintln!("Warning - unhandled character: '{:?}'", text.chars().nth(i));
+                if self.show_warns {
+                    eprintln!("Warning - unhandled character: '{:?}'", text.chars().nth(i));
+                }
                 *b
             };
 
@@ -85,7 +90,7 @@ mod tests {
 
     #[test]
     fn test_encrypt_sd_1() {
-        let caesar = Caesar::new(1);
+        let caesar = Caesar::new(1, false);
         let plain_text = "HELLO WORLD";
         let encrypted = caesar.encrypt(plain_text).unwrap();
 
@@ -94,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_encrypt_sd_0() {
-        let caesar = Caesar::new(0);
+        let caesar = Caesar::new(0, false);
         let plain_text = "HELLO WORLD";
         let encrypted = caesar.encrypt(plain_text).unwrap();
 
@@ -103,7 +108,7 @@ mod tests {
 
     #[test]
     fn test_encrypt_sd_53() {
-        let caesar = Caesar::new(53);
+        let caesar = Caesar::new(53, false);
         let plain_text = "HELLO WORLD";
         let encrypted = caesar.encrypt(plain_text).unwrap();
 
@@ -112,7 +117,7 @@ mod tests {
 
     #[test]
     fn test_decrypt_sd_1() {
-        let caesar = Caesar::new(1);
+        let caesar = Caesar::new(1, false);
         let cipher_text = "IFMMP XPSME";
         let decrypted = caesar.decrypt(cipher_text).unwrap();
 
@@ -121,7 +126,7 @@ mod tests {
 
     #[test]
     fn test_decrypt_sd_0() {
-        let caesar = Caesar::new(0);
+        let caesar = Caesar::new(0, false);
         let cipher_text = "HELLO WORLD";
         let decrypted = caesar.decrypt(cipher_text).unwrap();
 
@@ -130,7 +135,7 @@ mod tests {
 
     #[test]
     fn test_decrypt_sd_53() {
-        let caesar = Caesar::new(53);
+        let caesar = Caesar::new(53, false);
         let cipher_text = "IFMMP XPSME";
         let decrypted = caesar.decrypt(cipher_text).unwrap();
 
