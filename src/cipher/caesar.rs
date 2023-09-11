@@ -7,9 +7,9 @@
 ///
 /// Our particular version only encodes strings that are uppercase and valid
 /// UTF-8 characters.
-use super::Cipher;
-
 use anyhow::Result;
+
+use super::Cipher;
 
 /// The Caesar struct represents a Caesar cipher with a specific shift distance.
 /// The shift distance is the number of places each letter in the plaintext is
