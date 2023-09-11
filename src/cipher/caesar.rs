@@ -43,7 +43,7 @@ impl Caesar {
 impl Cipher for Caesar {
     fn encrypt(&self, plain_text: &str) -> Result<String> {
         let bytes = plain_text.as_bytes();
-        let mut res_bytes: Vec<u8> = Vec::with_capacity(plain_text.len());
+        let mut res_bytes: Vec<u8> = Vec::with_capacity(bytes.len());
 
         for (i, b) in bytes.iter().enumerate() {
             let new_byte = if b.is_ascii_alphabetic() && b.is_ascii_uppercase() {
@@ -52,7 +52,7 @@ impl Cipher for Caesar {
             } else {
                 // We only handle alphabetic uppercase characters
                 eprintln!(
-                    "Warning - unhandled character detected: {:?}",
+                    "Warning - unhandled character: '{:?}'",
                     plain_text.chars().nth(i)
                 );
                 *b
@@ -61,15 +61,35 @@ impl Cipher for Caesar {
             res_bytes.push(new_byte);
         }
 
-        let encoded = std::str::from_utf8(&res_bytes).with_context(|| {
-            format!("Failed to encrypt `{plain_text}`: Non-UTF8 characters detected")
-        })?;
-
+        let encoded = std::str::from_utf8(&res_bytes)?;
         Ok(encoded.to_string())
     }
 
     fn decrypt(&self, cipher_text: &str) -> Result<String> {
-        todo!()
+        let bytes = cipher_text.as_bytes();
+        let mut res_bytes: Vec<u8> = Vec::with_capacity(bytes.len());
+
+        let letter_a_code = b'A' as i16;
+        for (i, b) in bytes.iter().enumerate() {
+            if !b.is_ascii_alphabetic() || !b.is_ascii_uppercase() {
+                eprintln!(
+                    "Warning - unhandled character: '{:?}'",
+                    cipher_text.chars().nth(i)
+                );
+                res_bytes.push(*b);
+                continue;
+            }
+
+            // We need to cast the byte to an i16 because we cannot go below 0 with a
+            // standard u8
+            let b = *b as i16;
+            let new_byte =
+                (b - letter_a_code - self.shift_distance_mod as i16).rem_euclid(26) + letter_a_code;
+            res_bytes.push(new_byte as u8);
+        }
+
+        let decoded = std::str::from_utf8(&res_bytes)?;
+        Ok(decoded.to_string())
     }
 }
 
@@ -102,5 +122,32 @@ mod tests {
         let encrypted = caesar.encrypt(plain_text).unwrap();
 
         assert_eq!(encrypted, "IFMMP XPSME");
+    }
+
+    #[test]
+    fn test_decrypt_sd_1() {
+        let caesar = Caesar::new(1);
+        let cipher_text = "IFMMP XPSME";
+        let decrypted = caesar.decrypt(cipher_text).unwrap();
+
+        assert_eq!(decrypted, "HELLO WORLD");
+    }
+
+    #[test]
+    fn test_decrypt_sd_0() {
+        let caesar = Caesar::new(0);
+        let cipher_text = "HELLO WORLD";
+        let decrypted = caesar.decrypt(cipher_text).unwrap();
+
+        assert_eq!(decrypted, "HELLO WORLD");
+    }
+
+    #[test]
+    fn test_decrypt_sd_53() {
+        let caesar = Caesar::new(53);
+        let cipher_text = "IFMMP XPSME";
+        let decrypted = caesar.decrypt(cipher_text).unwrap();
+
+        assert_eq!(decrypted, "HELLO WORLD");
     }
 }
