@@ -5,7 +5,7 @@ The goal is to build up a strong foundation in modern applied cryptography conce
 All implementations are the solution I came up with and are, therefore, probably not the most optimal solution. If you have some ideas for improvement, please open up an issue or submit a PR!
 
 # Currently implemented
-  - Caesar cipher encrypt and decrypt
+  - Caesar cipher encryption and decryption
   - Caesar cipher bruteforce decryption using a list of the most common english words
 
 # Useful links and resources
