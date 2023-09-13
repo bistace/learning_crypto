@@ -7,10 +7,10 @@ pub struct MD5 {}
 impl Hasher for MD5 {
     fn hash(&self, text: &str) -> Result<String> {
         let table = build_value_table();
-        let mut a: u32 = 0x67452301;
-        let mut b: u32 = 0xEFCDAB89;
-        let mut c: u32 = 0x98BADCFE;
-        let mut d: u32 = 0x98BADCFE;
+        let a: u32 = 0x67452301;
+        let b: u32 = 0xEFCDAB89;
+        let c: u32 = 0x98BADCFE;
+        let d: u32 = 0x98BADCFE;
 
         let padded_text = pad_input(text);
 
@@ -130,85 +130,6 @@ fn u8_chunk_to_u32(chunk: &[u8]) -> Vec<u32> {
 
     // Return the vector of u32 values
     u32_values
-}
-
-/// Performs the first round of the MD5 algorithm.
-///
-/// The first round of the MD5 algorithm involves a series of 16 operations
-/// that are performed on the input parameters. These operations involve
-/// bitwise operations and rotations.
-fn round_1(a: &mut u32, b: &mut u32, c: &mut u32, d: &mut u32, x: &[u32], table: &[u32]) {
-    let s = [7, 12, 17, 22];
-
-    for i in 0..16 {
-        let k = i;
-        let f = f(*b, *c, *d);
-        let temp = *d;
-        *d = *c;
-        *c = *b;
-        *b += (*a + f + x[k] + table[i]).rotate_left(s[i % 4]);
-        *a = temp;
-    }
-}
-
-/// Performs the second round of the MD5 algorithm.
-///
-/// The second round of the MD5 algorithm involves a series of 16 operations
-/// that are performed on the input parameters. These operations involve
-/// bitwise operations and rotations.
-fn round_2(a: &mut u32, b: &mut u32, c: &mut u32, d: &mut u32, x: &[u32], table: &[u32]) {
-    let s = [5, 9, 14, 20];
-    let order = [1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12];
-
-    for i in 0..16 {
-        let k = order[i];
-        let g = g(*b, *c, *d);
-        let temp = *d;
-        *d = *c;
-        *c = *b;
-        *b += (*a + g + x[k] + table[i + 16]).rotate_left(s[i % 4]);
-        *a = temp;
-    }
-}
-
-/// Performs the third round of the MD5 algorithm.
-///
-/// The third round of the MD5 algorithm involves a series of 16 operations
-/// that are performed on the input parameters. These operations involve
-/// bitwise operations and rotations.
-fn round_3(a: &mut u32, b: &mut u32, c: &mut u32, d: &mut u32, x: &[u32], table: &[u32]) {
-    let s = [4, 11, 16, 23];
-    let order = [5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2];
-
-    for i in 0..16 {
-        let k = order[i];
-        let h = h(*b, *c, *d);
-        let temp = *d;
-        *d = *c;
-        *c = *b;
-        *b += (*a + h + x[k] + table[i + 32]).rotate_left(s[i % 4]);
-        *a = temp;
-    }
-}
-
-/// Performs the fourth round of the MD5 algorithm.
-///
-/// The fourth round of the MD5 algorithm involves a series of 16 operations
-/// that are performed on the input parameters. These operations involve
-/// bitwise operations and rotations.
-fn round_4(a: &mut u32, b: &mut u32, c: &mut u32, d: &mut u32, x: &[u32], table: &[u32]) {
-    let s = [6, 10, 15, 21];
-    let order = [0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9];
-
-    for it in 0..16 {
-        let k = order[it as usize];
-        let j = i(*b, *c, *d);
-        let temp = *d;
-        *d = *c;
-        *c = *b;
-        *b += (*a + it + x[k] + table[(it + 48) as usize]).rotate_left(s[(it % 4) as usize]);
-        *a = temp;
-    }
 }
 
 /// Auxiliary function used in the MD5 algorithm.
