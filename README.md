@@ -11,3 +11,5 @@ All implementations are the solution I came up with and are, therefore, probably
 # Useful links and resources
   - [Practical cryptography in Python](https://link.springer.com/book/10.1007/978-1-4842-4900-0) by Seth James Nielson and Christopher K. Monson
   - [Wikipedia MD5 page](https://en.wikipedia.org/wiki/MD5)
+  - [MD5 RFC](https://www.ietf.org/rfc/rfc1321.txt)
+  - [MD5 test strings](https://rosettacode.org/wiki/MD5/Implementation)
